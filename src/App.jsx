@@ -7,6 +7,7 @@ import Intro from './components/Intro';
 import GlassDock from './components/effects/GlassDock';
 import CustomCursor from './components/effects/CustomCursor';
 import SoundFx from './components/effects/SoundFx';
+import TouchFx from './components/effects/TouchFx';
 import TypingTitle from './components/effects/TypingTitle';
 import { LiquidFilterDefs } from './components/effects/LiquidImage';
 import Home from './pages/Home';
@@ -35,6 +36,7 @@ function App() {
           <Intro />
           <CustomCursor />
           <SoundFx />
+          <TouchFx />
           <LiquidFilterDefs />
           <Header />
           <main className="flex-1 pt-24">

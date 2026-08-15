@@ -427,6 +427,43 @@ html.has-custom-cursor .cursor-ring {
   margin: -36px 0 0 -36px;
 }
 
+/* ---------- Touch interactions (coarse pointer / mobile) ---------- */
+/* Kill the grey flash + 300ms delay so taps feel instant and clean. */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+@media (pointer: coarse) {
+  a, button, [role="button"], label, .tag,
+  .btn-solid, .btn-outline, .btn-ghost, .btn-neon, .btn-liquid, .btn-scan {
+    touch-action: manipulation;
+  }
+  /* Press feedback added by TouchFx while a control is held. */
+  .tapping {
+    transform: scale(0.95) !important;
+    transition: transform 0.12s ease-out !important;
+  }
+}
+
+/* Ripple that blooms at the exact touch point, anywhere on the page. */
+.touch-ripple {
+  position: fixed;
+  z-index: 9998;
+  pointer-events: none;
+  border-radius: 9999px;
+  transform: translate(-50%, -50%) scale(0);
+  background: radial-gradient(circle, rgb(var(--accent) / 0.38), rgb(var(--accent) / 0) 70%);
+  animation: touch-ripple 0.55s ease-out forwards;
+  will-change: transform, opacity;
+}
+@keyframes touch-ripple {
+  0%   { transform: translate(-50%, -50%) scale(0);   opacity: 0.9; }
+  100% { transform: translate(-50%, -50%) scale(3.4); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .touch-ripple { animation-duration: 0.25s; }
+  .tapping { transform: none !important; }
+}
+
 /* Marquee */
 .marquee {
   display: flex;
