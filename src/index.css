@@ -391,6 +391,10 @@ h1, h2, h3, .font-display {
 }
 .cursor-dot,
 .cursor-ring {
+  /* Hidden by default so touch devices never show a stray dot/ring stuck at
+     the top-left corner. Only revealed once the JS enables the custom cursor
+     on fine-pointer (desktop) devices. */
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
@@ -399,6 +403,10 @@ h1, h2, h3, .font-display {
   border-radius: 9999px;
   mix-blend-mode: difference;
   will-change: transform;
+}
+html.has-custom-cursor .cursor-dot,
+html.has-custom-cursor .cursor-ring {
+  display: block;
 }
 .cursor-dot {
   width: 8px;

@@ -1,31 +1,36 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 /**
  * Full-screen "click to continue" intro overlay, styled to match the site
- * (warm white, aura glow, Syne display, orange accent). Shows on every page
- * load; clicking anywhere fades it out and reveals the site.
+ * (warm white, aura glow, Syne display, orange accent).
+ *
+ * Only shows on the Home route ('/'). Deep links / refreshes on other routes
+ * (e.g. /projects) skip the intro entirely and render that page directly, so
+ * the visitor stays exactly where the URL points instead of bouncing to Home.
  */
 export default function Intro() {
-  const [gone, setGone] = useState(false);   // fully unmounted
-  const [leaving, setLeaving] = useState(false); // fade-out in progress
-  const [ready, setReady] = useState(false);  // whether to render at all
-  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const isHome = pathname === '/';
+
+  const [gone, setGone] = useState(!isHome);      // off-home: never mount the overlay
+  const [leaving, setLeaving] = useState(false);  // fade-out in progress
+  const [ready, setReady] = useState(false);      // whether to render at all
 
   useEffect(() => {
+    if (!isHome) return;                          // only take over the screen on Home
     setReady(true);
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = '';
     };
-  }, []);
+  }, [isHome]);
 
   const dismiss = () => {
     if (leaving) return;
     setLeaving(true);
     document.body.style.overflow = '';
-    navigate('/');                              // always land on Home
-    window.scrollTo({ top: 0, behavior: 'auto' }); // at the very top
+    window.scrollTo({ top: 0, behavior: 'auto' }); // stay at the very top of Home
     setTimeout(() => setGone(true), 700);
   };
 
@@ -38,7 +43,7 @@ export default function Intro() {
     return () => window.removeEventListener('keydown', onKey);
   }, [ready, leaving]);
 
-  if (!ready || gone) return null;
+  if (!isHome || !ready || gone) return null;
 
   return (
     <div
