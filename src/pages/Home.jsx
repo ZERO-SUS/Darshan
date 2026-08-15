@@ -82,7 +82,7 @@ export default function Home() {
           </Reveal>
 
           {/* Big statement headline */}
-          <h1 className="font-display font-extrabold leading-[0.9] tracking-tight text-ink text-[9.5vw] md:text-[8vw] lg:text-[6.6vw]">
+          <h1 className="font-display font-extrabold leading-[0.9] tracking-tight text-ink text-[8.5vw] md:text-[8vw] lg:text-[6.6vw]">
             <Reveal><span className="block"><TextLift text="Designing" /> &amp; building</span></Reveal>
             <Reveal delay={90}><span className="block text-gradient">digital experiences</span></Reveal>
             <Reveal delay={180}><MeshTextHover as="span" className="block">with craft &amp; taste.</MeshTextHover></Reveal>
@@ -316,13 +316,13 @@ export default function Home() {
               text="Let’s build together"
               as="h2"
               force={36}
-              className="font-extrabold leading-[0.95] tracking-tight text-accent text-[13vw] md:text-[9vw]"
+              className="font-extrabold leading-[0.95] tracking-tight text-accent text-[11vw] md:text-[9vw]"
             />
           </Reveal>
           <Reveal delay={160}>
             <a
               href="mailto:darshan99806@gmail.com"
-              className="mt-4 inline-block font-display text-2xl font-bold tracking-tight text-ink md:text-4xl"
+              className="mt-4 inline-block font-display text-[clamp(0.7rem,3.8vw,2.25rem)] font-bold tracking-tight text-ink"
             >
               <MeshTextHover>darshan99806@gmail.com</MeshTextHover>
             </a>

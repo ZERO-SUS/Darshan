@@ -49,7 +49,7 @@ export default function Footer() {
         <p className="eyebrow mb-6">Let’s connect</p>
         <a
           href="mailto:darshan99806@gmail.com"
-          className="font-display text-[5.5vw] font-extrabold leading-none tracking-[-0.03em] text-ink md:text-[3.6vw]"
+          className="font-display text-[clamp(0.7rem,3.7vw,2.75rem)] font-extrabold leading-none tracking-[-0.03em] text-ink"
         >
           <MeshTextHover>darshan99806@gmail.com</MeshTextHover>
         </a>

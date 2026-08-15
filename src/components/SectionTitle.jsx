@@ -6,7 +6,7 @@ import MeshTextHover from './effects/MeshTextHover';
  * `warp` is kept for API compatibility but the mesh effect is now the default.
  */
 export default function SectionTitle({ eyebrow, title, action, warp = false, className = '' }) {
-  const titleClasses = 'text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-ink leading-[1.05]';
+  const titleClasses = 'text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-ink leading-[1.05]';
   return (
     <div className={`w-full ${className}`}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

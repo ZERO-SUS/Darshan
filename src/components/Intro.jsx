@@ -66,7 +66,7 @@ export default function Intro() {
       </p>
 
       {/* Big statement */}
-      <h1 className="intro-fade font-display font-extrabold leading-[0.92] tracking-tight text-ink text-[13vw] sm:text-[9vw] md:text-[7.5vw]"
+      <h1 className="intro-fade font-display font-extrabold leading-[0.92] tracking-tight text-ink text-[8vw] sm:text-[7.5vw] md:text-[7.5vw]"
           style={{ animationDelay: '0.22s' }}>
         <span className="block">Designing &amp; building</span>
         <span className="block text-gradient">digital experiences.</span>
