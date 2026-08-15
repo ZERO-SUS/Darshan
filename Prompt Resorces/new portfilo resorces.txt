@@ -1,0 +1,32 @@
+Just Example website  :- https://jcedrik.com/
+My old portfoilo -- https://darsha.dev/
+here Make my portfilo color theme - https://www.figma.com/resource-library/color-combinations/#combination-82-peach-skyline
+
+# button ui designs 
+https://www.originkit.dev/components/liquid-carve-button?from=%2Fcategory%2Fbutton&preset=base
+https://www.originkit.dev/components/neon-border?from=%2Fcategory%2Fborder&preset=base
+https://reactbits.dev/components/magic-bento
+
+
+# Text effect UI
+https://www.originkit.dev/components/meshtexthover?from=%2Fcategory%2Ftext&preset=base
+https://www.originkit.dev/components/textmorph?from=%2Fcategory%2Ftext&preset=base
+https://www.originkit.dev/components/pixeldrift?from=%2Fcategory%2Ftext&preset=base
+https://www.originkit.dev/components/spotlighttext?from=%2Fcategory%2Ftext&preset=base
+https://www.originkit.dev/components/textlift?from=%2Fcategory%2Ftext&preset=base
+https://www.originkit.dev/components/pixel-led-display?from=%2Fcategory%2Ftext
+https://www.originkit.dev/components/text-vaporize?from=%2Fcategory%2Ftext&preset=base
+https://reactbits.dev/text-animations/particle-text
+
+
+# Image effect 
+https://www.originkit.dev/components/liquid-distortion?from=%2Fcategory%2Fimage&preset=base
+
+# animation effect 
+https://www.originkit.dev/components/juiceeffect?from=%2Fcategory%2Fanimation&preset=base
+
+#  currrs effect 
+https://reactbits.dev/animations/ripple-distortion
+
+# back side the icon ssuface at bottom UI
+https://reactbits.dev/components/glass-surface

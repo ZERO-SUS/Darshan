@@ -1,0 +1,653 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Peach Skyline — design tokens
+   Source hexes: #496580 slate · #FFD3AC peach · #FFB5AB coral
+                 #E39A7B terracotta · #DBB06B gold
+   Values are space-separated RGB channels so Tailwind's
+   `/<alpha-value>` opacity modifiers work (e.g. bg-surface/60).
+   ============================================================ */
+/* ---- Single theme: Orange on White ---- */
+:root,
+:root[data-theme='light'],
+:root[data-theme='dark'] {
+  --bg: 255 253 251;          /* warm white */
+  --surface: 255 255 255;     /* cards */
+  --surface-alt: 255 243 234; /* peach-tinted panels */
+  --ink: 24 18 16;            /* near-black warm ink */
+  --muted: 120 104 98;        /* warm grey */
+  --line: 232 220 212;        /* subtle warm hairline */
+  --accent: 255 92 20;        /* vivid orange */
+  --accent-strong: 230 74 8;  /* deep orange */
+  --coral: 255 122 60;
+  --peach: 255 170 90;
+  --gold: 255 150 40;
+  --slate: 120 104 98;
+  --shadow: 200 90 30;
+  color-scheme: light;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 110%; /* slight page zoom for a bigger, bolder feel */
+}
+
+/* Tablet: ease the zoom so headings don't crowd the edges */
+@media (max-width: 768px) {
+  html { font-size: 105%; }
+}
+
+/* Phones: full page zoom back to base so type + layout fit small viewports */
+@media (max-width: 480px) {
+  html { font-size: 100%; }
+}
+
+body {
+  font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+  background-color: rgb(var(--bg));
+  color: rgb(var(--ink));
+  min-height: 100vh;
+  /* Guard against any single wide element forcing sideways scroll on mobile */
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+h1, h2, h3, .font-display {
+  font-family: 'Syne', ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgb(var(--accent) / 0.28);
+  color: rgb(var(--ink));
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: rgb(var(--bg)); }
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--accent) / 0.5);
+  border-radius: 999px;
+  border: 3px solid rgb(var(--bg));
+}
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--accent) / 0.75); }
+
+/* Accessible focus ring */
+:where(a, button, input, textarea, select):focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ============================================================
+   Reusable component classes
+   ============================================================ */
+@layer components {
+  .container-content {
+    @apply w-full max-w-content mx-auto px-6 md:px-8;
+  }
+
+  /* Small mono eyebrow label */
+  .eyebrow {
+    @apply font-mono text-xs uppercase tracking-[0.2em] text-accent;
+  }
+
+  /* Gradient text (coral → amber sunset) */
+  .text-gradient {
+    background: linear-gradient(110deg, rgb(var(--coral)), rgb(var(--accent-strong)) 45%, rgb(var(--gold)));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: gradient-pan 6s ease infinite;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-medium rounded-full
+           px-5 py-2.5 text-sm transition-all duration-200 select-none
+           focus-visible:outline-none;
+  }
+  .btn-solid {
+    @apply btn text-white shadow-soft;
+    background: linear-gradient(120deg, rgb(var(--accent-strong)), rgb(var(--accent)));
+  }
+  .btn-solid:hover {
+    @apply shadow-glow -translate-y-0.5;
+    filter: saturate(1.08);
+  }
+  .btn-outline {
+    @apply btn border border-line text-ink bg-surface/40 hover:border-accent
+           hover:text-accent hover:-translate-y-0.5;
+  }
+  .btn-ghost {
+    @apply btn text-muted hover:text-accent hover:bg-accent/10;
+  }
+
+  /* Card surface — glassmorphism (light) */
+  .card {
+    @apply rounded-2xl border shadow-soft;
+    border-color: rgb(var(--ink) / 0.08);
+    background: rgb(var(--surface) / 0.7);
+    backdrop-filter: blur(16px) saturate(1.3);
+    -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  }
+
+  /* Mono tag pill */
+  .tag {
+    @apply inline-flex items-center font-mono text-[11px] leading-none
+           px-2.5 py-1.5 rounded-full border border-line text-muted bg-surface-alt/60;
+  }
+}
+
+@layer utilities {
+  .grain-none { }
+  /* Subtle animated conic aura used behind hero */
+  .aura {
+    background:
+      radial-gradient(60% 60% at 70% 20%, rgb(var(--peach) / 0.55), transparent 60%),
+      radial-gradient(50% 50% at 20% 80%, rgb(var(--coral) / 0.45), transparent 60%),
+      radial-gradient(40% 40% at 90% 90%, rgb(var(--gold) / 0.35), transparent 60%);
+  }
+}
+
+/* ============================================================
+   Effect components (from Prompt Resources)
+   ============================================================ */
+@layer components {
+  /* --- Neon border button (originkit: neon-border) --- */
+  .btn-neon {
+    @apply btn text-ink bg-surface/60 border border-line relative z-0 overflow-visible;
+  }
+  .btn-neon::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 9999px;
+    padding: 2px;
+    background: conic-gradient(
+      from var(--angle, 0deg),
+      rgb(var(--accent)), rgb(var(--gold)), rgb(var(--coral)), rgb(var(--accent))
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    animation: spin-angle 4s linear infinite;
+  }
+  .btn-neon:hover {
+    @apply text-accent -translate-y-0.5;
+    box-shadow: 0 0 20px rgb(var(--accent) / 0.35);
+  }
+  .btn-neon:hover::before { opacity: 1; }
+
+  /* --- Liquid carve button (originkit: liquid-carve-button) --- */
+  .btn-liquid {
+    @apply btn text-white relative z-0 overflow-hidden shadow-soft;
+    background: rgb(var(--accent-strong));
+  }
+  .btn-liquid::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(120deg, rgb(var(--gold)), rgb(var(--coral)));
+    transform: translateY(100%) scale(1.4);
+    border-radius: 50% 50% 0 0;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-liquid:hover { @apply -translate-y-0.5 shadow-glow; }
+  .btn-liquid:hover::before { transform: translateY(0) scale(1.4); border-radius: 0; }
+
+  /* --- Scan-grid button (originkit: scan-grid-button) --- */
+  .btn-scan {
+    @apply btn relative overflow-hidden border text-ink;
+    border-color: rgb(var(--ink) / 0.15);
+    background: rgb(var(--surface));
+  }
+  .btn-scan::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgb(var(--accent) / 0.35) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--accent) / 0.35) 1px, transparent 1px);
+    background-size: 9px 9px;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+  }
+  .btn-scan::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 45%;
+    background: linear-gradient(90deg, transparent, rgb(var(--accent) / 0.45), transparent);
+    transform: translateX(-160%);
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .btn-scan:hover {
+    @apply -translate-y-0.5 text-accent;
+    border-color: rgb(var(--accent));
+    box-shadow: 0 6px 24px rgb(var(--accent) / 0.22);
+  }
+  .btn-scan:hover::before { opacity: 1; }
+  .btn-scan:hover::after { transform: translateX(260%); }
+
+  /* --- Spotlight / magic-bento card (reactbits: magic-bento) --- */
+  .spotlight {
+    position: relative;
+    isolation: isolate;
+  }
+  .spotlight::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      220px circle at var(--mx, 50%) var(--my, 50%),
+      rgb(var(--accent) / 0.18), transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .spotlight:hover::after { opacity: 1; }
+  /* border highlight follows cursor */
+  .spotlight-border {
+    position: relative;
+  }
+  .spotlight-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: radial-gradient(
+      200px circle at var(--mx, 50%) var(--my, 50%),
+      rgb(var(--accent) / 0.6), transparent 60%
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .spotlight-border:hover::before { opacity: 1; }
+
+  /* --- Glass surface (reactbits: glass-surface) --- */
+  .glass {
+    background: rgb(var(--surface) / 0.55);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid rgb(var(--ink) / 0.08);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), 0 8px 30px rgb(var(--shadow) / 0.12);
+  }
+}
+
+@layer utilities {
+  /* Spotlight text: gradient reveal following the cursor */
+  .spotlight-text {
+    background: rgb(var(--muted));
+    background-image: radial-gradient(
+      140px circle at var(--mx, 50%) var(--my, 50%),
+      rgb(var(--accent-strong)), rgb(var(--gold)) 45%, rgb(var(--muted)) 75%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* Text lift: each letter rises on hover with per-letter delay */
+  .lift-char {
+    display: inline-block;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), color 0.35s ease;
+    will-change: transform;
+  }
+  .lift-group:hover .lift-char,
+  .lift-group:active .lift-char { /* :active → also triggers on touch tap */
+    transform: translateY(-0.18em);
+    color: rgb(var(--accent));
+  }
+}
+
+@keyframes spin-angle {
+  to { --angle: 360deg; }
+}
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* Ripple cursor canvas + custom dot */
+.ripple-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* Sunset gradient panning (used by .text-gradient) */
+@keyframes gradient-pan {
+  0% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+  100% { background-position: 0% center; }
+}
+
+/* Intro overlay — staggered rise/fade for each line */
+.intro-fade {
+  opacity: 0;
+  animation: intro-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes intro-rise {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Neon text glow */
+.text-glow {
+  text-shadow: 0 0 24px rgb(var(--accent) / 0.55), 0 0 60px rgb(var(--accent) / 0.3);
+}
+
+/* Glass floating nav pill */
+.glass-nav {
+  background: rgb(var(--surface) / 0.65);
+  backdrop-filter: blur(18px) saturate(1.5);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  border: 1px solid rgb(var(--ink) / 0.08);
+}
+
+/* ---------- Custom mix-blend cursor (desktop, fine pointer) ---------- */
+@media (pointer: fine) {
+  html.has-custom-cursor,
+  html.has-custom-cursor * {
+    cursor: none !important;
+  }
+}
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  border-radius: 9999px;
+  mix-blend-mode: difference;
+  will-change: transform;
+}
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  background: #fff;
+}
+.cursor-ring {
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  background: #fff;
+  transition: width 0.25s ease, height 0.25s ease, margin 0.25s ease, opacity 0.25s ease;
+}
+.cursor-ring--hover {
+  width: 72px;
+  height: 72px;
+  margin: -36px 0 0 -36px;
+}
+
+/* Marquee */
+.marquee {
+  display: flex;
+  overflow: hidden;
+  user-select: none;
+  gap: 0;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee__track {
+  display: flex;
+  flex-wrap: nowrap;
+  width: max-content;
+  will-change: transform;
+  animation: marquee-scroll 32s linear infinite;
+}
+.marquee:hover .marquee__track { animation-play-state: paused; }
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Mesh text hover (OriginKit "meshtexthover") — cursor repels each glyph from
+   its home cell with a distance falloff, then it springs back. Solid, crisp,
+   perfectly aligned: only transforms animate, the layout is real inline text. */
+.mesh-text-hover {
+  position: relative;
+  display: inline-block;
+  /* isolate transforms so displaced glyphs never nudge page layout */
+  white-space: normal;
+}
+.mesh-text-hover__word {
+  display: inline-block;
+  white-space: nowrap; /* never split a word across lines */
+  vertical-align: top;
+}
+.mesh-text-hover__char {
+  display: inline-block;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+.mesh-text-hover__space {
+  white-space: pre; /* preserve the inter-word space */
+}
+@media (prefers-reduced-motion: reduce) {
+  .mesh-text-hover__char { transform: none !important; }
+}
+
+/* DARSHAN wordmark overlay on the portrait — white gradient text that inverts
+   to dark under a circular lens following the cursor. Reuses the SpotlightCard
+   --mx/--my vars; --lens is toggled on hover. Both layers share identical box
+   + type metrics (inset-0, flex-centered) so they stay pixel-aligned. */
+.dbrp-label {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.dbrp-label__text {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  padding-left: 0.16em; /* offset trailing letter-spacing → optically centered */
+  font-size: clamp(1.6rem, 5.5vw, 2.3rem);
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+}
+.dbrp-label__base {
+  /* left → right: dark to lighter */
+  background: linear-gradient(90deg, #0c0a09 0%, #7a7168 55%, #ffffff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+/* True color-invert under the lens: white text blended with `difference`
+   flips the gradient beneath it (dark→light, light→dark) instead of stamping
+   a solid dark blob (which read as a shadow following the cursor). */
+.dbrp-label__dark {
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
+  mix-blend-mode: difference;
+}
+.dbrp-label__lens {
+  /* --lens is inherited from the tracking ancestor (toggled on hover);
+     the mask fallback keeps the lens closed (0px) until then. */
+  -webkit-mask-image: radial-gradient(circle var(--lens, 0px) at var(--mx, 50%) var(--my, 50%), #000 62%, rgba(0, 0, 0, 0) 100%);
+          mask-image: radial-gradient(circle var(--lens, 0px) at var(--mx, 50%) var(--my, 50%), #000 62%, rgba(0, 0, 0, 0) 100%);
+}
+
+/* Wrapper for the wide cover-band variant — same lens layers, larger type. */
+.dbrp-band {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Dither-reveal image: dithered canvas overlays the real photo; the cursor
+   opens a soft hole in the canvas mask to reveal the true image beneath. */
+.dither-reveal {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.dither-reveal__img,
+.dither-reveal__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.dither-reveal__img {
+  object-fit: cover;
+}
+.dither-reveal__canvas {
+  /* --r defaults to 0 → no hole → fully dithered until the cursor moves in */
+  -webkit-mask-image: radial-gradient(circle var(--r, 0px) at var(--mx, 50%) var(--my, 50%), transparent 55%, #000 100%);
+          mask-image: radial-gradient(circle var(--r, 0px) at var(--mx, 50%) var(--my, 50%), transparent 55%, #000 100%);
+}
+.dbrp-band .dbrp-label__text {
+  font-size: clamp(2.4rem, 11vw, 7.5rem);
+  letter-spacing: 0.12em;
+  padding-left: 0.12em;
+}
+
+/* Text roll / morph on hover (originkit "textmorph" logic) */
+/* line-height 1.3 makes the clip box tall enough for descenders (g, y, p)
+   AND keeps the two layers exactly one box apart, so nothing peeks at rest. */
+.text-roll { display: inline-flex; white-space: pre; line-height: 1.3; }
+.text-roll__col {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  line-height: 1.3;
+}
+.text-roll__a,
+.text-roll__b {
+  display: inline-block;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.text-roll__b {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translateY(100%);
+  color: rgb(var(--accent));
+}
+.text-roll:hover .text-roll__a,
+.text-roll:active .text-roll__a { transform: translateY(-100%); } /* :active → touch tap */
+.text-roll:hover .text-roll__b,
+.text-roll:active .text-roll__b { transform: translateY(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .btn-neon::before { animation: none; }
+  .text-gradient { animation: none; }
+  .marquee__track { animation: none; }
+}
+
+/* ============================================================
+   Blog / markdown prose — mapped to tokens
+   ============================================================ */
+.prose {
+  color: rgb(var(--muted));
+  max-width: none;
+}
+.prose p { margin-bottom: 1.5rem; line-height: 1.8; }
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  color: rgb(var(--ink));
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+.prose h1 { font-size: 2rem; }
+.prose h2 { font-size: 1.6rem; }
+.prose h3 { font-size: 1.3rem; }
+.prose img {
+  margin: 2rem 0;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(var(--line));
+  max-width: 100%;
+  height: auto;
+}
+.prose ul, .prose ol { margin-bottom: 1.5rem; padding-left: 2rem; }
+.prose li { margin-bottom: 0.5rem; line-height: 1.8; }
+.prose code {
+  background: rgb(var(--surface-alt));
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.35rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em;
+  color: rgb(var(--accent-strong));
+}
+.prose pre {
+  background: rgb(var(--surface-alt));
+  border: 1px solid rgb(var(--line));
+  padding: 1.25rem 1.5rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+.prose pre code { background: transparent; padding: 0; color: rgb(var(--ink)); }
+.prose blockquote {
+  border-left: 3px solid rgb(var(--accent));
+  padding-left: 1.25rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: rgb(var(--muted));
+}
+.prose a { color: rgb(var(--accent-strong)); text-decoration: underline; text-underline-offset: 3px; }
+.prose a:hover { color: rgb(var(--accent)); }
+.prose strong { color: rgb(var(--ink)); font-weight: 600; }
+.prose hr { border-color: rgb(var(--line)); margin: 2rem 0; }
+.prose table { width: 100%; margin: 1.5rem 0; border-collapse: collapse; }
+.prose th, .prose td { border: 1px solid rgb(var(--line)); padding: 0.75rem; text-align: left; }
+.prose th { background: rgb(var(--surface-alt)); color: rgb(var(--ink)); font-weight: 600; }
