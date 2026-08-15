@@ -19,29 +19,43 @@ export default function TouchFx() {
     // --- Web Audio (created lazily inside the first touch gesture so iOS/Android
     //     autoplay policies are satisfied) ---
     let ctx = null;
+    let master = null;
     const ensureCtx = () => {
       if (!ctx) {
         const AC = window.AudioContext || window.webkitAudioContext;
-        if (AC) ctx = new AC();
+        if (!AC) return null;
+        ctx = new AC();
+        master = ctx.createGain();
+        master.gain.value = 1;          // loud master bus
+        master.connect(ctx.destination);
+        // Mobile unlock: play a 1-sample silent buffer inside the gesture so the
+        // very first real blip is audible (iOS/Android otherwise stay muted).
+        try {
+          const buf = ctx.createBuffer(1, 1, 22050);
+          const src = ctx.createBufferSource();
+          src.buffer = buf;
+          src.connect(ctx.destination);
+          src.start(0);
+        } catch { /* ignore */ }
       }
-      if (ctx && ctx.state === 'suspended') ctx.resume();
+      if (ctx.state !== 'running') ctx.resume();
       return ctx;
     };
     const blip = (f0, f1, peak, dur) => {
       const c = ensureCtx();
       if (!c) return;
-      const t = c.currentTime;
+      const t = c.currentTime + 0.001;
       const osc = c.createOscillator();
       const gain = c.createGain();
-      osc.type = 'sine';
+      osc.type = 'triangle';            // richer harmonics = much louder than sine
       osc.frequency.setValueAtTime(f0, t);
       osc.frequency.exponentialRampToValueAtTime(f1, t + dur * 0.7);
       gain.gain.setValueAtTime(0.0001, t);
-      gain.gain.exponentialRampToValueAtTime(peak, t + 0.006);
+      gain.gain.exponentialRampToValueAtTime(peak, t + 0.008);
       gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      osc.connect(gain).connect(c.destination);
+      osc.connect(gain).connect(master);
       osc.start(t);
-      osc.stop(t + dur + 0.02);
+      osc.stop(t + dur + 0.03);
     };
 
     const INTERACTIVE =
@@ -68,13 +82,13 @@ export default function TouchFx() {
       const el = e.target.closest?.(INTERACTIVE);
       spawnRipple(e.clientX, e.clientY, !!el);
       if (el) {
-        blip(560, 840, 0.09, 0.07);  // crisp tick on a control
-        vibrate(14);
+        blip(600, 880, 0.5, 0.08);   // loud crisp tick on a control
+        vibrate(16);
         el.classList.add('tapping');
         pressed = el;
       } else {
-        blip(210, 150, 0.05, 0.06);  // soft low tap on empty space
-        vibrate(7);
+        blip(300, 200, 0.42, 0.07);  // clear tap anywhere (empty space)
+        vibrate(9);
       }
     };
     const release = () => {
