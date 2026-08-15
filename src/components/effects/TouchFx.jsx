@@ -5,10 +5,9 @@ import { useEffect } from 'react';
  * (phones, tablets). Desktop keeps its own custom cursor + SoundFx and this
  * component stays completely inert there.
  *
- * On every touch it gives the user three kinds of feedback at once:
+ * On every touch it gives the user feedback:
  *  - a Material-style ripple at the exact touch point, anywhere on the page
- *  - a soft synthesised blip (brighter/louder on interactive elements)
- *  - a short haptic buzz via navigator.vibrate
+ *  - a synthesised blip (louder/brighter on interactive elements)
  * and a quick press-scale on tapped buttons/links (the `.tapping` class), so
  * holding a control feels physical instead of a flat one-shot tap.
  */
@@ -60,7 +59,6 @@ export default function TouchFx() {
 
     const INTERACTIVE =
       'a, button, [role="button"], input, textarea, select, label, .tag, [data-cursor="hover"]';
-    const vibrate = (ms) => { try { navigator.vibrate?.(ms); } catch { /* unsupported */ } };
 
     const spawnRipple = (x, y, big) => {
       const r = document.createElement('span');
@@ -83,12 +81,10 @@ export default function TouchFx() {
       spawnRipple(e.clientX, e.clientY, !!el);
       if (el) {
         blip(600, 880, 0.5, 0.08);   // loud crisp tick on a control
-        vibrate(16);
         el.classList.add('tapping');
         pressed = el;
       } else {
         blip(300, 200, 0.42, 0.07);  // clear tap anywhere (empty space)
-        vibrate(9);
       }
     };
     const release = () => {
